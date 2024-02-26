@@ -4,6 +4,7 @@ import argparse
 import logging
 import os
 import json
+import sys
 import time
 
 def send_json_message(analysis_path:str, send_message_script: str, message: dict, step_file_name:str) -> None:
@@ -19,7 +20,7 @@ def steward(config_file_path:str, ukb_rsem_calculate_expression_path:str, send_m
         config_d = json.load(config_f)
     # make the params.json file
     params_d = {
-        'rsem_index_path': config_d['ukbParams']['rsem_index_path'],
+        'rsem_index_path': config_d['ukbParams']['rsem_index'],
         'fastq1'         : config_d['ukbParams']['fastq1'],
         'fastq2'         : config_d['ukbParams']['fastq2']
     }
@@ -30,12 +31,12 @@ def steward(config_file_path:str, ukb_rsem_calculate_expression_path:str, send_m
     return_value = os.system(ukb_rsem_calculate_expression_command)
     logging.info(ukb_rsem_calculate_expression_command)
     logging.info('return value:{}\n'.format(str(return_value)))
-    time.sleep(5)
+    time.sleep(20)
     # send the result files 
     feedback_dict = {
         'uuid'          : config_d['uuid'],
         'ukbId'         : config_d['ukbId'],
-        'ukbToolsCode'  : config_d['ukbToolsCode'],
+        'ukbToolsCode'  : config_d['ukbToolCode'],
         'ukbToolName'   : config_d['ukbToolName'],
         'pipeline'      : 'ukb',
         'analysisStatus': '',
@@ -54,6 +55,7 @@ def steward(config_file_path:str, ukb_rsem_calculate_expression_path:str, send_m
         feedback_dict['endDate']        = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
         feedback_dict['error']          = 1
         send_json_message(analysis_path, send_message_script, feedback_dict, 'start.json')
+        sys.exit()
     flag = 0
     while True:
         execution_trace_file = '{}/results'.format(analysis_path)

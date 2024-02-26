@@ -9,7 +9,7 @@ fi
 config_file="$1"
 analysis_dir=$(dirname "$config_file")
 script_path="$(dirname "$(realpath "$0")")"
-sendMessage=$(jq ".jms" "$script_path"/../../configuration.json | sed 's/\"//g')
+sendMessage=$(jq ".jms" "$script_path"/../../config/configuration.json | sed 's/\"//g')
 
 cd "$analysis_dir" || exit
 python3 "$script_path"/ukb_rsem_calculate_expression_wrapper.py \
